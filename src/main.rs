@@ -4,6 +4,12 @@ use std::io::{Listener,Acceptor};
 use std::thread::Thread;
 use std::io::net::tcp;
 
+const SERVER_NAME: &'static str = "IBATs_web_server";
+// max limit tends to be 8KB (Firefox), 4KB (Opera), or 2KB (IE, Safari)
+const MAX_REQUEST_LENGTH: usize = 8192;
+
+const DEBUG: bool = true;
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:8000").unwrap();
     let mut acceptor = listener.listen().unwrap();
