@@ -33,8 +33,13 @@ fn handle_client(mut stream: TcpStream) {
     if DEBUG {
         println!("Got request: {}", std::str::from_utf8(&buf).unwrap());
     }
-    else {
-        stream.write_str("HTTP/1.0 400 Bad Request");
-    }*/
+    match &buf[0..4] {
+        b"GET " => {
+            let resp: &str = "HTTP/1.0 200 OK\nweb_server\nContent-type: text/plain\nContent-Length: 2\n\nOK\n";
+            stream.write_str(resp);
+        },
+        _ => {
+            stream.write_str("HTTP/1.0 400 Bad Request\n");
+        },
     }
 }
