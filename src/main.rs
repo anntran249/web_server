@@ -28,29 +28,13 @@ fn main() {
 }
     
 fn handle_client(mut stream: TcpStream) {
-    let mut buf = [0];
-    //let request: String = stream.read_to_string().unwrap();
+    let mut buf = [0; MAX_REQUEST_LENGTH];
     stream.read(&mut buf);
-    match &buf[0..7] {
-                     b"GET    " => {
-                        stream.write_str("HTTP/1.0 200 OK\nweb_server\nContent-type: text/plain\nContent-Length: 2\nOK");
-    
-                 } 
-                     _ => {stream.write_str("HTTP/1.0 400 Bad Request");},
-   /* let mut request_split = request.as_slice().split(' ');
-    //let method = request_split.next().unwrap();
-    if (method.as_slice() == "GET") {
-        let response: String = format!("HTTP/1.0 200 OK\nweb_server\nContent-type: text/plain\nContent-Length: 2\nOK");
-        stream.write_str(response.as_slice());
+    if DEBUG {
+        println!("Got request: {}", std::str::from_utf8(&buf).unwrap());
     }
     else {
         stream.write_str("HTTP/1.0 400 Bad Request");
     }*/
     }
 }
-
-
-
-
-
-
