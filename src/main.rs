@@ -1,9 +1,10 @@
+use std::os;
 use std::io;
 use std::io::{TcpListener,TcpStream};
-use std::io::{Listener,Acceptor};
+use std::io::{File,Listener,Acceptor};
 use std::thread::Thread;
 use std::io::net::tcp;
-
+use std::io::IoError;
 const SERVER_NAME: &'static str = "IBATs_web_server";
 // max limit tends to be 8KB (Firefox), 4KB (Opera), or 2KB (IE, Safari)
 const MAX_REQUEST_LENGTH: usize = 8192;
@@ -58,6 +59,21 @@ fn handle_client(mut stream: TcpStream) {
             println!("file: {}", file);
             println!("ending: {}", ending);
             println!("{}", ending.trim_matches(|&: c: char| c == '/' || c == '.' || c.is_numeric()));
+            let cwd = os::getcwd().unwrap();
+            println!("{:?}", cwd);
+            let path = cwd.join(file.slice_from(1));
+            println!("path: {:?}", path);
+            /*let contents =*/
+            match File::open(&path) {
+                Ok(mut f) => { 
+                        let contents = f.read_to_string().unwrap(); 
+                        let response = format!("HTTP/1.0 200 OK\n{}\nContent-type: text/plain\nContent-Length: {}\n\n{}", SERVER_NAME, contents.len(), contents);
+                        stream.write_str(response.as_slice());
+                        return;
+                        } ,
+                _ => { stream.write_str("HTTP/1.0 404 Not Found\n"); return; }, 
+            }
+            //println!("content: {}", contents);
         } else {
             let method: &str = "";
             let file: &str = "";
